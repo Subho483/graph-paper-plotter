@@ -1,0 +1,29 @@
+{
+  "name": "primary",
+  "version": "1.0.0",
+  "description": "A precision web application for generating standard **A4 (`210 × 297 mm`)** millimeter graph paper (`1 mm`, `2 mm`, `5 mm`, `10 mm`, or custom grid spacing), calculating exact millimeter coordinates from `(X, Y)` data points and custom `1 mm = ...` scales, and exporting high-resolution **PNG** and true-scale **A4 PDF** graphs.",
+  "main": "app.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Subho483/graph-paper-plotter.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Subho483/graph-paper-plotter/issues"
+  },
+  "homepage": "https://github.com/Subho483/graph-paper-plotter#readme",
+  "dependencies": {
+    "@vercel/analytics": "^2.0.1"
+  },
+  "devDependencies": {
+    "vite": "^8.3.4"
+  }
+}
