@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Graph Paper Plotter</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <!-- Top Header -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-badge">1mm</div>
+      <div>
+        <h1>Graph Paper Plotter</h1>
+        <p class="subtitle">Enter (X, Y) Data &rarr; Get Exact mm Coordinates &amp; Plotted A4 Graph Paper</p>
+      </div>
+    </div>
+
+    <div class="top-actions">
+      <button type="button" id="btnDownloadPNG" class="btn btn-primary">
+        Download Graph PNG
+      </button>
+      <button type="button" id="btnDownloadPDF" class="btn btn-accent">
+        Download Graph PDF
+      </button>
+    </div>
+  </header>
+
+  <!-- Main 2-Column Layout -->
+  <div class="app-shell">
+    <!-- LEFT SIDEBAR: Inputs (Paper Size, Scale, and Data Points) -->
+    <aside class="control-column">
+      <!-- STEP 1: GRAPH PAPER & LINE MODE -->
+      <section class="panel-card">
+        <div class="panel-title-row">
+          <span class="step-num">1</span>
+          <h2>Graph Paper &amp; Curve Type</h2>
+        </div>
+
+        <div class="field-grid-2">
+          <div class="field">
+            <label for="gridSizeMm">Graph Paper Grid (mm)</label>
+            <div class="mm-input-group">
+              <input type="number" id="gridSizeMm" value="1" min="0.5" max="20" step="0.5" />
+              <span class="unit-tag">mm</span>
+            </div>
+            <div class="mini-presets">
+              <button type="button" class="chip active" data-mm="1">1 mm</button>
+              <button type="button" class="chip" data-mm="2">2 mm</button>
+              <button type="button" class="chip" data-mm="5">5 mm</button>
+              <button type="button" class="chip" data-mm="10">10 mm</button>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="plotMode">How to Join Points</label>
+            <select id="plotMode">
+              <option value="smooth" selected>Smooth Curve (Lab Curve)</option>
+              <option value="connected">Straight Segments (Point-to-Point)</option>
+              <option value="bestfit">Best-Fit Straight Line (Regression)</option>
+              <option value="scatter">Points Only (No Line)</option>
+            </select>
+            <label for="paperTheme" style="margin-top: 4px;">Graph Paper Color</label>
+            <select id="paperTheme">
+              <option value="green" selected>Classic Millimeter Green</option>
+              <option value="orange">Engineering Orange / Red</option>
+              <option value="blue">Blueprint Blue</option>
+              <option value="gray">Black &amp; White (Print)</option>
+            </select>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 2: SCALE & STARTING ORIGIN -->
+      <section class="panel-card">
+        <div class="panel-title-row">
+          <span class="step-num">2</span>
+          <h2>Scale &amp; Axis Origin (1 mm = ?)</h2>
+          <button type="button" id="btnAutoScale" class="btn btn-xs btn-outline-green" title="Automatically calculate recommended scale and starting origin from your entered points">
+            Auto-Recommend Scale
+          </button>
+        </div>
+
+        <div class="scale-box-grid">
+          <!-- X-Axis Scale -->
+          <div class="axis-scale-card">
+            <div class="axis-card-header">X-Axis Configuration</div>
+            <div class="field-row">
+              <div class="field">
+                <label for="xName">X Quantity Name</label>
+                <input type="text" id="xName" value="" placeholder="e.g. X-Axis" />
+              </div>
+              <div class="field" style="max-width: 74px;">
+                <label for="xUnit">Unit</label>
+                <input type="text" id="xUnit" value="" placeholder="Unit" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="scaleXPerMm">Scale: <strong>1 mm =</strong></label>
+                <input type="number" id="scaleXPerMm" value="1" step="any" min="0.00001" class="highlight-input" />
+              </div>
+              <div class="field">
+                <label for="originX">Start X-Axis at</label>
+                <input type="number" id="originX" value="0" step="any" />
+              </div>
+            </div>
+            <div class="scale-sub-note" id="xScaleSubNote">
+              10 mm (1 cm) = 10
+            </div>
+          </div>
+
+          <!-- Y-Axis Scale -->
+          <div class="axis-scale-card">
+            <div class="axis-card-header">Y-Axis Configuration</div>
+            <div class="field-row">
+              <div class="field">
+                <label for="yName">Y Quantity Name</label>
+                <input type="text" id="yName" value="" placeholder="e.g. Y-Axis" />
+              </div>
+              <div class="field" style="max-width: 74px;">
+                <label for="yUnit">Unit</label>
+                <input type="text" id="yUnit" value="" placeholder="Unit" />
+              </div>
+            </div>
+            <div class="field-row">
+              <div class="field">
+                <label for="scaleYPerMm">Scale: <strong>1 mm =</strong></label>
+                <input type="number" id="scaleYPerMm" value="1" step="any" min="0.00001" class="highlight-input" />
+              </div>
+              <div class="field">
+                <label for="originY">Start Y-Axis at</label>
+                <input type="number" id="originY" value="0" step="any" />
+              </div>
+            </div>
+            <div class="scale-sub-note" id="yScaleSubNote">
+              10 mm (1 cm) = 10
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- STEP 3: (X, Y) DATA INPUT -->
+      <section class="panel-card flex-grow-card">
+        <div class="panel-title-row">
+          <span class="step-num">3</span>
+          <h2>Enter (X, Y) Data Points</h2>
+          <div class="tab-pills">
+            <button type="button" class="pill-btn active" data-tab="tabRows">Rows</button>
+            <button type="button" class="pill-btn" data-tab="tabBulk">Paste Text</button>
+          </div>
+        </div>
+
+        <!-- Tab 1: Point Rows -->
+        <div id="tabRows" class="tab-box active">
+          <!-- Quick Add Row -->
+          <div class="quick-entry-row">
+            <input type="number" id="addXInput" step="any" placeholder="Enter X" />
+            <input type="number" id="addYInput" step="any" placeholder="Enter Y" />
+            <button type="button" id="btnAddRow" class="btn btn-primary btn-sm">+ Add Point</button>
+          </div>
+
+          <div class="input-table-wrap">
+            <table class="input-table">
+              <thead>
+                <tr>
+                  <th style="width: 28px">#</th>
+                  <th id="thInputX">X Value</th>
+                  <th id="thInputY">Y Value</th>
+                  <th>X (mm)</th>
+                  <th>Y (mm)</th>
+                  <th style="width: 26px"></th>
+                </tr>
+              </thead>
+              <tbody id="inputTableBody"></tbody>
+            </table>
+          </div>
+
+          <div class="input-table-footer">
+            <span id="ptCountText" class="muted-label">0 points</span>
+            <div style="display: flex; gap: 6px;">
+              <button type="button" id="btnSortX" class="btn btn-xs btn-ghost">Sort by X</button>
+              <button type="button" id="btnClearPts" class="btn btn-xs btn-danger">Clear All</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tab 2: Bulk Paste -->
+        <div id="tabBulk" class="tab-box">
+          <p class="muted-label" style="margin-bottom: 6px;">
+            Paste X and Y values (one pair per line, separated by comma, tab, or space):
+          </p>
+          <textarea id="bulkTextarea" rows="6" placeholder="x1, y1&#10;x2, y2&#10;x3, y3"></textarea>
+          <button type="button" id="btnApplyBulk" class="btn btn-primary" style="width: 100%; margin-top: 8px;">
+            Plot Pasted Data
+          </button>
+        </div>
+      </section>
+    </aside>
+
+    <!-- RIGHT WORKSPACE: Constant A4 (210 x 297 mm) Millimeter Graph Paper -->
+    <main class="results-column">
+      <!-- Graph Toolbar -->
+      <div class="graph-toolbar">
+        <div class="toolbar-left">
+          <span class="chk-pill a4-spec-pill">
+            Standard A4 Sheet (210 &times; 297 mm) &bull; 180 &times; 240 mm Grid
+          </span>
+
+          <label class="chk-pill">
+            <input type="checkbox" id="chkShowMmRuler" checked />
+            <span>Show mm Ruler Marks</span>
+          </label>
+          <label class="chk-pill">
+            <input type="checkbox" id="chkShowDropLines" checked />
+            <span>Show Dashed (x, y) Drop Lines</span>
+          </label>
+          <label class="chk-pill">
+            <input type="checkbox" id="chkShowPointLabels" checked />
+            <span>Show Point Labels</span>
+          </label>
+        </div>
+
+        <div class="toolbar-right">
+          <button type="button" id="btnZoomOut" class="icon-btn" title="Zoom Out">&minus;</button>
+          <span id="zoomReadout" class="zoom-badge">100%</span>
+          <button type="button" id="btnZoomIn" class="icon-btn" title="Zoom In">&plus;</button>
+          <button type="button" id="btnZoomReset" class="btn btn-xs btn-ghost">Fit Screen</button>
+        </div>
+      </div>
+
+      <!-- Hover Coordinate Bar -->
+      <div class="hover-status-bar" id="hoverStatusBar">
+        Move cursor over the millimeter graph paper to inspect exact <strong>mm position</strong> and <strong>(X, Y) value</strong>
+      </div>
+
+      <!-- Responsive Viewport that Auto-Fits the A4 Sheet to Any Screen Size -->
+      <div class="results-scroll" id="resultsScroll">
+        <div class="canvas-stage" id="canvasStage">
+          <div class="paper-frame" id="paperFrame">
+            <canvas id="graphCanvas"></canvas>
+            <canvas id="hoverCanvas"></canvas>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
